@@ -3,7 +3,9 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
-#define FILAS 45
+#include <unistd.h>
+#include "Headers.h"
+#define FILAS 101
 #define COLUM 1
 
 int vaciar_buffer(void)
@@ -15,10 +17,14 @@ int vaciar_buffer(void)
 
 void pausa()
 {
-    printf("presiones ENTER para continuar....");
+    printf(ANSI_YELLOW"\npresiones ENTER para continuar...."ANSI_RESET);
     getchar();
 }
 
+void limpiar_pantalla(){
+    printf("\033[2J\033[1;1H");
+    return;
+}
 
 int menu_caracteres()
 {
@@ -26,25 +32,46 @@ int menu_caracteres()
     int opc=-1;
     while (opc != 0 && opc != 1 && opc != 2 && opc != 3)
     {
-        printf("seleccione el nivel de seguridad de la clave: \n");
-        printf("1- Sencilla (Numerica)\n");
-        printf("2- Intermedia (AlfaNumerica)\n");
-        printf("3- Segura (AlfaNumerica + Caracteres espaciales)\n\n");
-        printf("0- Salir\n");
+        printf(ANSI_CYAN"Seleccione el nivel de seguridad de la clave: \n");
+        printf("\t\t1- Sencilla (Numerica)\n");
+        printf("\t\t2- Intermedia (AlfaNumerica)\n");
+        printf("\t\t3- Segura (AlfaNumerica + Caracteres especiales)\n\n");
+        printf(ANSI_RED"\t\t\t0- Salir\n");
 
-        printf("opcion: ");
+        printf(ANSI_YELLOW"opcion: "ANSI_RESET);
         scanf("%d", &opc);
 
         vaciar_buffer();
     }
+    pausa();
+    limpiar_pantalla();
+    
     return opc;
 }
 int Cant_char_per_contra(){
     // pido por teclado la cantidad de caracteres que van a poseer las contraseñas
-    int cant;
-    printf("ingrese la cantidad de caracteres que desee que tenga la contraseña: \n");
-    scanf("%d", &cant);
+    int cant=0;
+    printf(ANSI_CYAN"ingrese la cantidad de caracteres que desee que tenga la contraseña (maximo 100 caracteres): "ANSI_RESET);
+    int validador = scanf("%d", &cant);
     vaciar_buffer();
+    while((cant<0 || cant>=100) || validador != 1){
+        printf(ANSI_RED"-------- ERROR -------- \n"ANSI_RESET);
+        
+        if(validador!=1){
+            printf(ANSI_YELLOW"Por favor igrese un numero entero, letras o caracteres especiales no son admitidos "ANSI_RESET);
+
+        }
+        else{
+            printf(ANSI_YELLOW"la cantidada de caracteres tiene que ser entre 0 y 100, porfavor ingrese nuevamente:  "ANSI_RESET);
+             
+        }
+        validador = scanf("%d", &cant);
+        vaciar_buffer();
+    }
+    
+    printf(ANSI_CYAN"Cantidad de caracteres a generar: "ANSI_bGREEN"%d\n"ANSI_RESET,cant);
+    
+    
     return cant;
 }
 void cargarRandom(int v[], int util, int numRand)
@@ -63,7 +90,7 @@ void Generar_clave(int vNumeros[], char vChar[FILAS][COLUM], int utilf, int util
 {
     // defino los 3 posibles diccionarios de caracteres que se usaran en base al nivel de seguridad seleccionado
     int f, c, i;
-    int cant = Cant_char_per_contra();
+    
     char AlfabetoNum[10][1] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"};
     char AlfabetoAlfaNum [36][1] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r",
                                     "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"};
@@ -72,10 +99,12 @@ void Generar_clave(int vNumeros[], char vChar[FILAS][COLUM], int utilf, int util
                                "!", "&", "+", "*", "<", ">", ",", ".", "?"};
     if (opc == 0)
     {
-        printf("Gracias por usar la app  =)");
+        printf(ANSI_GREEN"Gracias por usar la app <3 !!"ANSI_RESET);
         return;
     }
+    
     else{
+        int cant = Cant_char_per_contra();
         if (opc == 1){
             cargarRandom(vNumeros, cant,10);
             for (f = 0; f < cant; f++){
@@ -118,26 +147,21 @@ void Generar_clave(int vNumeros[], char vChar[FILAS][COLUM], int utilf, int util
     }
 }
 
-void mostrar(int v[], int util)
-{
-    int i;
-    for (i = 0; i < util; i++)
-    {
-        printf("%i\t", v[i]);
-    }
-}
+
 void MostrarMatriz(char matriz[FILAS][COLUM], int utilf, int utilc)
 {
     int f, c;
+    printf(ANSI_GREEN"\nContraseña: "ANSI_RESET);
     for (f = 0; f < utilf; f++)
     {
         
         for (c = 0; c < utilc; c++)
         {
-            printf("%c", matriz[f][c]);
+            printf(ANSI_bGREEN"%c"ANSI_RESET, matriz[f][c]);
         }
     }
     printf("\n");
+    pausa();
 }
 
 
@@ -147,19 +171,37 @@ int main()
     char vC[FILAS][COLUM] = {};
     int canta_claves,opc;
     int utilf = FILAS, utilc = 1;
-    int util = FILAS;
 
-    printf("Ingrese la cantidad de calves que quiere generar: ");
+    printf(ANSI_bBLUE"Ingrese la cantidad de calves que quiere generar (0- Salir): "ANSI_RESET);
     scanf("%d", &canta_claves);
     vaciar_buffer();
-    opc = menu_caracteres();
+    
 
-    for (int i = 0; i < canta_claves; i++)
-    {
-        printf("\n");
-        Generar_clave(v, vC, utilf, utilc,opc);
-        MostrarMatriz(vC, utilf, utilc);
-        printf("\n");
-        _sleep(1000);
+    while(canta_claves!=0){
+        
+        limpiar_pantalla();
+        opc = menu_caracteres();
+        
+        for (int i = 0; i < canta_claves; i++)
+        {
+            printf("\n");
+            Generar_clave(v, vC, utilf, utilc,opc);
+            MostrarMatriz(vC, utilf, utilc);
+            printf("\n");
+            
+        }
+        printf(ANSI_RED" --------- ADVERTENCIA ---------\nAl darle al ENTER se BORRARAN las contraseñas generadas, asegurate de ya haberlas COPIADO"ANSI_RESET);
+        pausa();
+        limpiar_pantalla();
+        printf(ANSI_bBLUE"Ingrese la cantidad de calves que quiere generar (0- Salir): "ANSI_RESET);
+        scanf("%d", &canta_claves);
+        vaciar_buffer();
+        
     }
+    
+    printf(ANSI_GREEN"Gracias por usar la app <3 !!"ANSI_RESET);
+
+    return 0;
+
+    
 }
