@@ -54,7 +54,7 @@ int Cant_char_per_contra(){
     printf(ANSI_CYAN"ingrese la cantidad de caracteres que desee que tenga la contraseña (maximo 100 caracteres): "ANSI_RESET);
     int validador = scanf("%d", &cant);
     vaciar_buffer();
-    while((cant<0 || cant>=100) || validador != 1){
+    while((cant<=0 || cant>100) || validador != 1){
         printf(ANSI_RED"-------- ERROR -------- \n"ANSI_RESET);
         
         if(validador!=1){
@@ -112,7 +112,6 @@ void Generar_clave(int vNumeros[], char vChar[FILAS][COLUM], int utilf, int util
                     vChar[f][c] = AlfabetoNum[vNumeros[f]][c];
                 }
             }
-
             return;
         }
         if (opc == 2){
@@ -172,32 +171,46 @@ int main()
     int canta_claves,opc;
     int utilf = FILAS, utilc = 1;
 
+    limpiar_pantalla();
+
     printf(ANSI_bBLUE"Ingrese la cantidad de calves que quiere generar (0- Salir): "ANSI_RESET);
-    scanf("%d", &canta_claves);
+    int validador = scanf("%d", &canta_claves);
     vaciar_buffer();
     
 
-    while(canta_claves!=0){
+    while(canta_claves<=0 || validador!=1){
         
-        limpiar_pantalla();
-        opc = menu_caracteres();
-        
-        for (int i = 0; i < canta_claves; i++)
-        {
-            printf("\n");
-            Generar_clave(v, vC, utilf, utilc,opc);
-            MostrarMatriz(vC, utilf, utilc);
-            printf("\n");
-            
+        if(validador!=1){
+            printf(ANSI_RED"-------- ERROR -------- \n"ANSI_RESET);
+            printf(ANSI_RED"No se admiten letras ni otro tipo de caracteres \n"ANSI_RESET);
+            printf(ANSI_bBLUE"Ingrese la cantidad de claves que quiere generar (0- Salir): "ANSI_RESET);
+            validador = scanf("%d", &canta_claves);
+            vaciar_buffer();
         }
-        printf(ANSI_RED" --------- ADVERTENCIA ---------\nAl darle al ENTER se BORRARAN las contraseñas generadas, asegurate de ya haberlas COPIADO"ANSI_RESET);
-        pausa();
-        limpiar_pantalla();
-        printf(ANSI_bBLUE"Ingrese la cantidad de calves que quiere generar (0- Salir): "ANSI_RESET);
-        scanf("%d", &canta_claves);
-        vaciar_buffer();
+        else{
+            printf(ANSI_RED"-------- ERROR -------- \n"ANSI_RESET);
+            printf(ANSI_RED"Por favor ingresar numeros mayores a 0 \n"ANSI_RESET);
+            printf(ANSI_bBLUE"Ingrese la cantidad de claves que quiere generar (0- Salir): "ANSI_RESET);
+            validador = scanf("%d", &canta_claves);
+            vaciar_buffer();
+        }
+    }
+    limpiar_pantalla();
+    opc = menu_caracteres();
+        
+    for (int i = 0; i < canta_claves; i++){
+        printf("\n");
+        Generar_clave(v, vC, utilf, utilc,opc);
+        MostrarMatriz(vC, utilf, utilc);
+        printf("\n");
         
     }
+    printf(ANSI_RED" --------- ADVERTENCIA ---------\nAl darle al ENTER se BORRARAN las contraseñas generadas, asegurate de ya haberlas COPIADO"ANSI_RESET);
+    pausa();
+    limpiar_pantalla();
+    printf(ANSI_bBLUE"Ingrese la cantidad de calves que quiere generar (0- Salir): "ANSI_RESET);
+    validador = scanf("%d", &canta_claves);
+    vaciar_buffer();
     
     printf(ANSI_GREEN"Gracias por usar la app <3 !!"ANSI_RESET);
 
