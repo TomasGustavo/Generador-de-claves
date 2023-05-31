@@ -17,7 +17,7 @@ int vaciar_buffer(void)
 
 void pausa()
 {
-    printf(ANSI_YELLOW "\npresiones ENTER para continuar...." ANSI_RESET);
+    printf(ANSI_YELLOW "\npresione ENTER para continuar...." ANSI_RESET);
     getchar();
 }
 
@@ -30,17 +30,17 @@ void limpiar_pantalla()
 void mostrar_menu(){
 
     printf(ANSI_CYAN "\t\tSeleccione el nivel de seguridad de la clave: \n\n");
-    printf("\t\t1- Sencilla (Numerica)\n");
+    printf("\t\t1- Sencilla (Numérica)\n");
     printf("\t\t2- Intermedia (AlfaNumerica)\n");
     printf("\t\t3- Segura (AlfaNumerica + Caracteres especiales)\n\n");
     printf(ANSI_RED "\t\t\t0- Salir\n");
  
-    printf(ANSI_YELLOW "opcion: " ANSI_RESET);
+    printf(ANSI_YELLOW "opción: " ANSI_RESET);
 }
 
 int menu_caracteres()
 {
-    // pido por teclado el nivel de seguridad de cada contraseña
+    // pido por teclado el nivel de seguridad de cada contraseña 
     int opc = -1;
     mostrar_menu();
     scanf("%d", &opc);
@@ -49,7 +49,7 @@ int menu_caracteres()
     while (opc != 0 && opc != 1 && opc != 2 && opc != 3)
     {
         printf(ANSI_RED "-------- ERROR -------- \n" ANSI_RESET);
-        printf(ANSI_RED "Opcion no valida, por favor seleccionar algunas de las opciones disponibles \n" ANSI_RESET);
+        printf(ANSI_RED "Opción no valida, por favor seleccionar algunas de las opciones disponibles \n" ANSI_RESET);
         pausa();
         limpiar_pantalla();
         mostrar_menu();
@@ -67,7 +67,7 @@ int Cant_char_per_contra()
 {
     // pido por teclado la cantidad de caracteres que van a poseer las contraseñas
     int cant = 0;
-    printf(ANSI_CYAN "ingrese la cantidad de caracteres que desee que tenga la contraseña (maximo 100 caracteres): " ANSI_RESET);
+    printf(ANSI_CYAN "ingrese la cantidad de caracteres que desee que tenga la contraseña (máximo 100 caracteres): " ANSI_RESET);
     int validador = scanf("%d", &cant);
     vaciar_buffer();
     while ((cant <= 0 || cant > 100) || validador != 1)
@@ -76,11 +76,11 @@ int Cant_char_per_contra()
 
         if (validador != 1)
         {
-            printf(ANSI_YELLOW "Por favor igrese un numero entero, letras o caracteres especiales no son admitidos " ANSI_RESET);
+            printf(ANSI_YELLOW "Por favor ingrese un numero entero, letras o caracteres especiales no son admitidos " ANSI_RESET);
         }
         else
         {
-            printf(ANSI_YELLOW "la cantidada de caracteres tiene que ser entre 0 y 100, porfavor ingrese nuevamente:  " ANSI_RESET);
+            printf(ANSI_YELLOW "la cantidad de caracteres tiene que ser entre 0 y 100, por favor ingrese nuevamente:  " ANSI_RESET);
         }
         validador = scanf("%d", &cant);
         vaciar_buffer();
@@ -92,7 +92,7 @@ int Cant_char_per_contra()
 }
 void cargarRandom(int v[], int util, int numRand)
 {
-    // cargo de manera random un vector con numeros en base a la cantidad
+    // cargo de manera random un vector con números en base a la cantidad
     // de distintos valores unitarios de caracteres
     int i;
     srand((unsigned)time(NULL));
@@ -218,7 +218,7 @@ int main()
             }
             else{
                 printf(ANSI_RED "-------- ERROR -------- \n" ANSI_RESET);
-                printf(ANSI_RED "Por favor ingresar numeros mayores a 0 \n" ANSI_RESET);
+                printf(ANSI_RED "Por favor ingresar números mayores a 0 \n" ANSI_RESET);
                 printf(ANSI_bBLUE "Ingrese la cantidad de claves que quiere generar (0- Salir): " ANSI_RESET);
                 validador = scanf("%d", &canta_claves);
                 vaciar_buffer();
@@ -226,7 +226,7 @@ int main()
         }
 
         if (canta_claves == 0){
-            printf(ANSI_GREEN "\nHasta la proxima!" ANSI_RESET);
+            printf(ANSI_GREEN "\nHasta la próxima!" ANSI_RESET);
             printf(ANSI_GREEN "\nGracias por usar la app <3 !!" ANSI_RESET);
         }
 
