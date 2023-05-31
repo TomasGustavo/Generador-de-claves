@@ -198,8 +198,15 @@ int main()
     char vC[FILAS][COLUM] = {};
     int canta_claves=-1, opc;
     int utilf = FILAS, utilc = 1;
+    int contador=0;
 
     limpiar_pantalla();
+
+    FILE *archivo = fopen("contador.txt", "r");
+    if (archivo != NULL) {
+        fscanf(archivo, "%d", &contador);
+        fclose(archivo);
+    }
 
     while (canta_claves != 0){
 
@@ -241,13 +248,20 @@ int main()
                 MostrarMatriz(vC, utilf, utilc);
                 printf("\n");
             }
-            printf(ANSI_RED " --------- ADVERTENCIA ---------\nAl darle al ENTER se BORRARAN las contraseñas generadas, asegurate de ya haberlas COPIADO" ANSI_RESET);
+            printf(ANSI_RED " --------- ADVERTENCIA ---------\nAl darle al ENTER se BORRARAN las contraseñas generadas, asegúrate de ya haberlas COPIADO" ANSI_RESET);
             pausa();
             limpiar_pantalla();
             printf(ANSI_bBLUE "Ingrese la cantidad de calves que quiere generar (0- Salir): " ANSI_RESET);
             validador = scanf("%d", &canta_claves);
             vaciar_buffer();
         }
+    }
+    contador++;
+
+    archivo = fopen("contador.txt", "w");
+    if (archivo != NULL) {
+        fprintf(archivo, "%d", contador);
+        fclose(archivo);
     }
 
     
