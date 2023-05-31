@@ -63,6 +63,10 @@ int menu_caracteres()
 
     return opc;
 }
+
+
+/// @brief Ingresa por teclado la cantidad de caracteres que va a tener cada contraseña
+/// @return Int con la cantidad ingresada.
 int Cant_char_per_contra()
 {
     // pido por teclado la cantidad de caracteres que van a poseer las contraseñas
@@ -90,6 +94,12 @@ int Cant_char_per_contra()
 
     return cant;
 }
+
+
+/// @brief Carga un vector con números generados aleatoriamente
+/// @param v vector con los números a cargar
+/// @param util Cantidad de números a cargar
+/// @param numRand rango máximo de números a generar
 void cargarRandom(int v[], int util, int numRand)
 {
     // cargo de manera random un vector con números en base a la cantidad
@@ -102,6 +112,14 @@ void cargarRandom(int v[], int util, int numRand)
     }
 }
 
+
+
+/// @brief Genera la contraseña y la guarda en una matriz
+/// @param vNumeros Vector cargado de números aleatorios
+/// @param vChar    Matriz donde se cargaran las contraseñas
+/// @param utilf    Cantidad de filas utilizadas en la matriz
+/// @param utilc    Cantidad de columnas utilizadas en la matriz (hardcodeado a 1)
+/// @param opc      Nivel de seguridad de la contraseña
 void Generar_clave(int vNumeros[], char vChar[FILAS][COLUM], int utilf, int utilc, int opc)
 {
     // defino los 3 posibles diccionarios de caracteres que se usaran en base al nivel de seguridad seleccionado
@@ -176,6 +194,11 @@ void Generar_clave(int vNumeros[], char vChar[FILAS][COLUM], int utilf, int util
     }
 }
 
+
+/// @brief Muestra una Matriz
+/// @param matriz Matriz a mostrar
+/// @param utilf  Cantidad de filas utilizadas en la matriz
+/// @param utilc  Cantidad de columnas utilizadas en la matriz (hardcodeado a 1)
 void MostrarMatriz(char matriz[FILAS][COLUM], int utilf, int utilc)
 {
     int f, c;
@@ -202,6 +225,8 @@ int main()
 
     limpiar_pantalla();
 
+    
+    // Guardo en la variable contador el numero que hay y cierro el archivo.
     FILE *archivo = fopen("contador.txt", "r");
     if (archivo != NULL) {
         fscanf(archivo, "%d", &contador);
@@ -258,6 +283,8 @@ int main()
     }
     contador++;
 
+    // Una vez finalmente ejecutado el programa (sumado a la variable contador +1 previamente) vuelvo
+    // a abrir el archivo y guardo el numero modificado.
     archivo = fopen("contador.txt", "w");
     if (archivo != NULL) {
         fprintf(archivo, "%d", contador);
