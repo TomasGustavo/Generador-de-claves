@@ -221,7 +221,7 @@ int main()
     char vC[FILAS][COLUM] = {};
     int canta_claves=-1, opc;
     int utilf = FILAS, utilc = 1;
-    int contador=0;
+    int contador=000;
 
     limpiar_pantalla();
 
@@ -290,8 +290,6 @@ int main()
         fprintf(archivo, "%d", contador);
         fclose(archivo);
     }
-
     
-
     return 0;
 }
