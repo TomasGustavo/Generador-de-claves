@@ -215,6 +215,8 @@ void MostrarMatriz(char matriz[FILAS][COLUM], int utilf, int utilc)
     pausa();
 }
 
+// hacer función para para que pueda guardar las claves generadas con nombre en un archivo y opción para mostrarlas en vez de generarlas.
+
 int main()
 {
     int v[FILAS] = {};
@@ -276,9 +278,7 @@ int main()
             printf(ANSI_RED " --------- ADVERTENCIA ---------\nAl darle al ENTER se BORRARAN las contraseñas generadas, asegúrate de ya haberlas COPIADO" ANSI_RESET);
             pausa();
             limpiar_pantalla();
-            printf(ANSI_bBLUE "Ingrese la cantidad de calves que quiere generar (0- Salir): " ANSI_RESET);
-            validador = scanf("%d", &canta_claves);
-            vaciar_buffer();
+            
         }
     }
     contador++;
