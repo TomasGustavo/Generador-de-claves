@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <unistd.h>
 #include "Headers.h"
+#include <stdbool.h>
 #define FILAS 101
 #define COLUM 1
 
@@ -52,18 +53,87 @@ void menu(int n){
 
     printf("\n");
     printf(ANSI_BLUE "  ============================================================================\n");
-    printf(" |                                 Generador de clave v0.%d                                |\n",n);
+    printf(" |                           Generador de claves v0.%d                        |\n",n);
     printf("  ============================================================================\n");
     printf("\n");
     printf("  1   Generar nuevas claves\n");
     printf("  2   Mostrar claves guardadas\n");
+    printf("  3   Modificar nombre de clave\n");
+    printf("  4   Eliminar clave guardada\n");
     printf("\n");
-    printf("  0   Salir\n");
+    printf(ANSI_bRED"  0   Salir\n"ANSI_BLUE);
     printf("\n");
     printf(" ------------------------------------------------------------------------------\n");
     printf("\n");
     printf("  Por favor seleccione una opción: " ANSI_YELLOW);
 
+}
+
+void main_modificar(){
+    FILE *archivo = fopen("claves.dat", "r+b");
+    clave contra = (clave) malloc(sizeof(struct claveRep));
+    char nom[FILAS];
+    int i=0;
+    mostrar_lista_contra();
+    printf(ANSI_BLUE"Indique el nombre de la clave que quiere modificar: "ANSI_bYELLOW);    
+    fgets(nom,FILAS,stdin);
+    nom[strcspn(nom, "\n")] = '\0'; // Eliminar el carácter de nueva línea
+
+    fseek(archivo, 0, SEEK_SET);
+    fread(contra,sizeof(struct claveRep),1,archivo);
+    while(!feof(archivo)){
+        if(strcmp(contra->nombre,nom)==0){
+            i++;
+            printf(ANSI_BLUE"Indique nuevo nombre para la clave: "ANSI_bYELLOW);    
+            fgets(nom,FILAS,stdin);
+            nom[strcspn(nom, "\n")] = '\0'; // Eliminar el carácter de nueva línea
+            fseek(archivo, -((long)sizeof(struct claveRep)), SEEK_CUR);
+            strcpy(contra->nombre,nom);
+            fwrite(contra, sizeof(struct claveRep), 1, archivo);
+            printf(ANSI_bGREEN"\n\tNombre cambiado con éxito!");
+            pausa();
+            break;
+        }
+        fread(contra,sizeof(struct claveRep),1,archivo);
+    }
+    if(i!=1){
+        printf(ANSI_bRED"\n\tNo existe ninguna clave con ese nombre!\n"ANSI_RESET);
+        pausa();
+    }
+
+    fclose(archivo);
+}
+
+void main_eliminar(){
+    FILE *archivo = fopen("claves.dat", "r+b");
+    clave contra = (clave) malloc(sizeof(struct claveRep));
+    char nom[20];
+    int i=0;
+    mostrar_lista_contra();
+    printf(ANSI_BLUE"Indique el nombre de la clave que quiere eliminar: "ANSI_bYELLOW);
+    fgets(nom,20,stdin);
+    nom[strcspn(nom, "\n")] = '\0'; // Eliminar el carácter de nueva línea
+
+    fseek(archivo, 0, SEEK_SET);
+    fread(contra,sizeof(struct claveRep),1,archivo);
+    while(!feof(archivo)){
+        if(strcmp(contra->nombre,nom)==0){
+            i++;
+            fseek(archivo, -((long)sizeof(struct claveRep)), SEEK_CUR);
+            contra->estado = false;
+            fwrite(contra, sizeof(struct claveRep), 1, archivo);
+            printf(ANSI_bGREEN"\n\tBaja lógica exitosa!\n"ANSI_RESET);
+            pausa();
+            break;
+        }
+        fread(contra,sizeof(struct claveRep),1,archivo);
+    }
+    if(i!=1){
+        printf(ANSI_bRED"\n\tNo existe ninguna clave con ese nombre!\n"ANSI_RESET);
+        pausa();
+    }
+
+    fclose(archivo);
 }
 
 void menu_guardar(){
@@ -104,13 +174,14 @@ void main_menu_guardar(char vC[FILAS][COLUM]){
 
         copiarMatriz(vC,contra,FILAS,COLUM);
         printf(ANSI_GREEN "Ingrese Nombre que le asignara a la contraseña: " ANSI_YELLOW);
-        fgets(contra->nombre, 20, stdin);
+        fgets(contra->nombre, FILAS, stdin);
         contra->nombre[strcspn(contra->nombre, "\n")] = '\0'; // Eliminar el carácter de nueva línea
+        contra->estado = true;
         fseek(archivo, 0, SEEK_END);
         fwrite(contra, sizeof(struct claveRep), 1, archivo);
         
         fclose(archivo);
-        printf(ANSI_bGREEN"Contraseña guardada con éxito!");     
+        printf(ANSI_bGREEN"\n\tContraseña guardada con éxito!\n");
     }
     else{
         printf(ANSI_bMAGENTA"La contraseña no fue guardada!");
@@ -390,7 +461,9 @@ void mostrar_lista_contra(){
     fseek(archivo, 0, SEEK_SET);
     fread(contra, sizeof(struct claveRep), 1, archivo);
     while(!feof(archivo)){
-        printf(ANSI_bMAGENTA "\n%s: " ANSI_YELLOW "%s\t \n",contra->nombre,contra->contrasenia);
+        if(contra->estado == true){
+            printf(ANSI_bYELLOW "\n%s: " ANSI_GREEN "%s\t \n",contra->nombre,contra->contrasenia);
+        }
         fread(contra, sizeof(struct claveRep), 1, archivo);
     }
     pausa();
@@ -404,33 +477,47 @@ void inicio(int contador){
     menu(contador);
     int validador = scanf("%d",&x);
     vaciar_buffer();
-    while(validador!=1 || x != 1 && x != 0 && x!=2){
+    while(validador!=1 || (x != 1 && x != 0 && x!=2 && x!=3 && x!=4)){
         printf(ANSI_bRED"----- ERROR -----: ");
         menu(contador);
         validador = scanf("%d",&x);
         vaciar_buffer();
         limpiar_pantalla();
     }
-    if(x==1){
+    switch (x){
+    case 1:
         menu_generar_claves();
         limpiar_pantalla();
         inicio(contador);
-    }
-    else if(x==2){
+        break;
+    case 2:
         mostrar_lista_contra();
         limpiar_pantalla();
         inicio(contador);
-    }
-    else{
+        break;
+    case 3:
+        main_modificar();
+        limpiar_pantalla();
+        inicio(contador);
+        break;
+    case 4:
+        main_eliminar();
+        limpiar_pantalla();
+        inicio(contador);
+        break;
+
+    case 0:
         printf(ANSI_GREEN "\nHasta la próxima!" ANSI_RESET);
         printf(ANSI_GREEN "\nGracias por usar la app <3 !!" ANSI_RESET);
+        break;
+    default:
+        break;
     }
+    
 }
-
 // hacer función para para que pueda guardar las claves generadas con nombre en un archivo y opción para mostrarlas en vez de generarlas.
 
-int main()
-{
+int main(){
     crear_archivo_binario();
     int contador=000;
 
@@ -453,6 +540,5 @@ int main()
         fprintf(archivo, "%d", contador);
         fclose(archivo);
     }
-    
     return 0;
 }

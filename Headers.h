@@ -1,6 +1,7 @@
 #ifndef Headers_h
 #define Headers_h
 
+#include <stdbool.h>
 
 #define ANSI_RED "\e[31m"
 #define ANSI_GREEN "\e[32m"
@@ -21,6 +22,7 @@
 struct claveRep{
     char contrasenia[FILAS][COLUM];
     char nombre[FILAS];
+    bool estado;
 };
 typedef struct claveRep *clave;
 
@@ -40,6 +42,8 @@ void cargarRandom(int v[], int util, int numRand);
 void Generar_clave(int vNumeros[], char vChar[FILAS][COLUM], int utilf, int utilc,int opc);
 
 void MostrarMatriz(char matriz[FILAS][COLUM], int utilf, int utilc);
+
+void mostrar_lista_contra();
 
 
 #endif // Headers_h
