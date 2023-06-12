@@ -18,6 +18,13 @@
 #define FILAS 101
 #define COLUM 1
 
+struct claveRep{
+    char contrasenia[FILAS][COLUM];
+    char nombre[FILAS];
+};
+typedef struct claveRep *clave;
+
+
 int vaciar_buffer(void);
 
 void pausa();

@@ -8,6 +8,155 @@
 #define FILAS 101
 #define COLUM 1
 
+void crear_archivo_binario()
+{
+    FILE *archivo = fopen("claves.dat", "rb");
+    
+    if (archivo == NULL) {
+        archivo = fopen("claves.dat", "wb");
+        
+        if (archivo == NULL) {
+            printf("No se pudo crear el archivo.\n");
+            fclose(archivo);
+            return;
+        }
+        else{
+            printf("Archivo creado exitosamente.\n");
+            fclose(archivo);    
+            return;
+        }
+    } 
+    else {
+        printf("El archivo ya existe.\n");
+        fclose(archivo);
+        return;
+    }
+}
+
+void copiarMatriz(char matrizOriginal[FILAS][COLUM], clave contra, int filas, int columnas) {
+    for (int i = 0; i < filas; i++) {
+        for (int j = 0; j < columnas; j++) {
+            contra->contrasenia[i][j] = matrizOriginal[i][j];
+        }
+    }
+}
+
+void menu(int n){
+
+    printf("\n");
+    printf(ANSI_BLUE "  ============================================================================\n");
+    printf(" |                                 Generador de clave v0.%d                                |\n",n);
+    printf("  ============================================================================\n");
+    printf("\n");
+    printf("  1   Generar nuevas claves\n");
+    printf("  2   Mostrar claves guardadas\n");
+    printf("\n");
+    printf("  0   Salir\n");
+    printf("\n");
+    printf(" ------------------------------------------------------------------------------\n");
+    printf("\n");
+    printf("  Por favor seleccione una opción: " ANSI_YELLOW);
+
+}
+
+void menu_guardar(){
+    printf("\n");
+    printf(ANSI_BLUE "  ============================================================================\n");
+    printf(" |                                 Guardado de claves                                |\n");
+    printf("  ============================================================================\n");
+    printf("\n");
+    printf("  1   Guardar nueva clave\n");
+    printf("\n");
+    printf("  0   No guardar (Salir)\n");
+    printf("\n");
+    printf(" ------------------------------------------------------------------------------\n");
+    printf("\n");
+    printf("  Por favor seleccione una opción: " ANSI_YELLOW);
+}
+
+void main_menu_guardar(char vC[FILAS][COLUM]){
+   
+    clave contra = (clave) malloc(sizeof(struct claveRep));
+
+    menu_guardar();
+
+    int opc;
+    int validador = scanf("%d",&opc);
+    vaciar_buffer();
+    while(validador!=1 || opc != 1 && opc != 0 ){
+        printf(ANSI_bRED"Dato incorrecto, por favor seleccionar una de las opciones [1 - 0]: ");
+        validador = scanf("%d",&opc);
+        vaciar_buffer();
+        limpiar_pantalla();
+    }
+
+    if(opc == 1){
+        FILE *archivo = fopen("claves.dat", "r+b");
+
+        copiarMatriz(vC,contra,FILAS,COLUM);
+        printf(ANSI_GREEN "Ingrese Nombre que le asignara a la contraseña: " ANSI_YELLOW);
+        fgets(contra->nombre, 20, stdin);
+        contra->nombre[strcspn(contra->nombre, "\n")] = '\0'; // Eliminar el carácter de nueva línea
+        fseek(archivo, 0, SEEK_END);
+        fwrite(contra, sizeof(struct claveRep), 1, archivo);
+        
+        fclose(archivo);
+        printf(ANSI_bGREEN"Contraseña guardada con éxito!");     
+    }
+    else{
+        printf(ANSI_bMAGENTA"La contraseña no fue guardada!");
+    }
+}
+
+void menu_generar_claves(){
+    int v[FILAS] = {};
+    char vC[FILAS][COLUM] = {};
+    int canta_claves=-1, opc;
+    int utilf = FILAS, utilc = 1;
+
+    while (canta_claves != 0){
+
+        printf(ANSI_bBLUE "Ingrese la cantidad de calves que quiere generar (0- Salir): " ANSI_RESET);
+        int validador = scanf("%d", &canta_claves);
+        vaciar_buffer();
+
+        while (canta_claves < 0 || validador != 1){
+
+            if (validador != 1){
+                printf(ANSI_RED "-------- ERROR -------- \n" ANSI_RESET);
+                printf(ANSI_RED "No se admiten letras ni otro tipo de caracteres \n" ANSI_RESET);
+                printf(ANSI_bBLUE "Ingrese la cantidad de claves que quiere generar (0- Salir): " ANSI_RESET);
+                validador = scanf("%d", &canta_claves);
+                vaciar_buffer();
+            }
+            else{
+                printf(ANSI_RED "-------- ERROR -------- \n" ANSI_RESET);
+                printf(ANSI_RED "Por favor ingresar números mayores a 0 \n" ANSI_RESET);
+                printf(ANSI_bBLUE "Ingrese la cantidad de claves que quiere generar (0- Salir): " ANSI_RESET);
+                validador = scanf("%d", &canta_claves);
+                vaciar_buffer();
+            }
+        }
+
+        if (canta_claves != 0){
+            limpiar_pantalla();
+            opc = menu_caracteres();
+
+            for (int i = 0; i < canta_claves; i++)
+            {
+                printf("\n");
+                Generar_clave(v, vC, utilf, utilc, opc);
+                MostrarMatriz(vC, utilf, utilc);
+                printf("\n");
+                main_menu_guardar(vC);
+                pausa();
+                limpiar_pantalla();
+            }
+            limpiar_pantalla();
+        }
+    }
+}
+
 int vaciar_buffer(void)
 {
     char nada[200];
@@ -194,7 +343,6 @@ void Generar_clave(int vNumeros[], char vChar[FILAS][COLUM], int utilf, int util
     }
 }
 
-
 /// @brief Muestra una Matriz
 /// @param matriz Matriz a mostrar
 /// @param utilf  Cantidad de filas utilizadas en la matriz
@@ -215,15 +363,55 @@ void MostrarMatriz(char matriz[FILAS][COLUM], int utilf, int utilc)
     pausa();
 }
 
+void mostrar_lista_contra(){
+    FILE *archivo = fopen("claves.dat","r+b");
+    clave contra = (clave)malloc(sizeof(struct claveRep));
+
+    printf(ANSI_bCYAN "\nCONTENIDO ALMACENADO EN claves.dat\n");
+    fseek(archivo, 0, SEEK_SET);
+    while(!feof(archivo)){
+        fread(contra, sizeof(struct claveRep), 1, archivo);
+        printf(ANSI_bMAGENTA "\n%s: " ANSI_YELLOW "%s\t \n",contra->nombre,contra->contrasenia);
+    }
+    pausa();
+    fclose(archivo);
+}
+
+void test(int contador){
+    int x;
+    menu(contador);
+    int validador = scanf("%d",&x);
+    vaciar_buffer();
+    while(validador!=1 || x != 1 && x != 0 && x!=2){
+        printf(ANSI_bRED"----- ERROR -----: ");
+        menu(contador);
+        validador = scanf("%d",&x);
+        vaciar_buffer();
+        limpiar_pantalla();
+    }
+    if(x==1){
+        menu_generar_claves();
+        limpiar_pantalla();
+        test(contador);
+    }
+    else if(x==2){
+        mostrar_lista_contra();
+        limpiar_pantalla();
+        test(contador);
+    }
+    else{
+        printf(ANSI_GREEN "\nHasta la próxima!" ANSI_RESET);
+        printf(ANSI_GREEN "\nGracias por usar la app <3 !!" ANSI_RESET);
+    }
+}
+
 // hacer función para para que pueda guardar las claves generadas con nombre en un archivo y opción para mostrarlas en vez de generarlas.
 
 int main()
 {
-    int v[FILAS] = {};
-    char vC[FILAS][COLUM] = {};
-    int canta_claves=-1, opc;
-    int utilf = FILAS, utilc = 1;
+    crear_archivo_binario();
     int contador=000;
+    
 
     limpiar_pantalla();
 
@@ -235,54 +423,9 @@ int main()
         fclose(archivo);
     }
 
-    while (canta_claves != 0){
-
-        printf(ANSI_bBLUE "Ingrese la cantidad de calves que quiere generar (0- Salir): " ANSI_RESET);
-        int validador = scanf("%d", &canta_claves);
-        vaciar_buffer();
-
-        while (canta_claves < 0 || validador != 1){
-
-            if (validador != 1){
-                printf(ANSI_RED "-------- ERROR -------- \n" ANSI_RESET);
-                printf(ANSI_RED "No se admiten letras ni otro tipo de caracteres \n" ANSI_RESET);
-                printf(ANSI_bBLUE "Ingrese la cantidad de claves que quiere generar (0- Salir): " ANSI_RESET);
-                validador = scanf("%d", &canta_claves);
-                vaciar_buffer();
-            }
-            else{
-                printf(ANSI_RED "-------- ERROR -------- \n" ANSI_RESET);
-                printf(ANSI_RED "Por favor ingresar números mayores a 0 \n" ANSI_RESET);
-                printf(ANSI_bBLUE "Ingrese la cantidad de claves que quiere generar (0- Salir): " ANSI_RESET);
-                validador = scanf("%d", &canta_claves);
-                vaciar_buffer();
-            }
-        }
-
-        if (canta_claves == 0){
-            printf(ANSI_GREEN "\nHasta la próxima!" ANSI_RESET);
-            printf(ANSI_GREEN "\nGracias por usar la app <3 !!" ANSI_RESET);
-        }
-
-        else{
-            limpiar_pantalla();
-            opc = menu_caracteres();
-
-            for (int i = 0; i < canta_claves; i++)
-            {
-                printf("\n");
-                Generar_clave(v, vC, utilf, utilc, opc);
-                MostrarMatriz(vC, utilf, utilc);
-                printf("\n");
-            }
-            printf(ANSI_RED " --------- ADVERTENCIA ---------\nAl darle al ENTER se BORRARAN las contraseñas generadas, asegúrate de ya haberlas COPIADO" ANSI_RESET);
-            pausa();
-            limpiar_pantalla();
-            
-        }
-    }
+    test(contador);
+    
     contador++;
-
     // Una vez finalmente ejecutado el programa (sumado a la variable contador +1 previamente) vuelvo
     // a abrir el archivo y guardo el numero modificado.
     archivo = fopen("contador.txt", "w");
