@@ -8,6 +8,7 @@
 #define FILAS 101
 #define COLUM 1
 
+/// @brief crea un archivo binario, si esta creado indica que existe ya uno, sino lo crea
 void crear_archivo_binario()
 {
     FILE *archivo = fopen("claves.dat", "rb");
@@ -33,6 +34,12 @@ void crear_archivo_binario()
     }
 }
 
+
+/// @brief copia el contenido de la matriz con claves en la estructura.
+/// @param matrizOriginal matriz con los caracteres a copiar
+/// @param contra estructura donde serán copiados los datos
+/// @param filas cantidad de filas de la matriz
+/// @param columnas cantidad de columnas de la matriz
 void copiarMatriz(char matrizOriginal[FILAS][COLUM], clave contra, int filas, int columnas) {
     for (int i = 0; i < filas; i++) {
         for (int j = 0; j < columnas; j++) {
@@ -74,6 +81,8 @@ void menu_guardar(){
     printf("  Por favor seleccione una opción: " ANSI_YELLOW);
 }
 
+/// @brief guarda la estructura de datos con la contraseña y el nombre dado en un archivo binario
+/// @param vC matriz con la contraseña generada
 void main_menu_guardar(char vC[FILAS][COLUM]){
    
     clave contra = (clave) malloc(sizeof(struct claveRep));
@@ -108,6 +117,8 @@ void main_menu_guardar(char vC[FILAS][COLUM]){
     }
 }
 
+
+/// @brief toma la cantidad de claves a generar y llama a las funciones que que la generan y guardan.
 void menu_generar_claves(){
     int v[FILAS] = {};
     char vC[FILAS][COLUM] = {};
@@ -157,6 +168,7 @@ void menu_generar_claves(){
     }
 }
 
+/// @brief limpia el buffer del teclado
 int vaciar_buffer(void)
 {
     char nada[200];
@@ -164,12 +176,15 @@ int vaciar_buffer(void)
     return 0;
 }
 
+
+/// @brief una pausa para que el usuario vea lo que se imprimio
 void pausa()
 {
     printf(ANSI_YELLOW "\npresione ENTER para continuar...." ANSI_RESET);
     getchar();
 }
 
+/// @brief borra lo que haya impreso en la pantalla
 void limpiar_pantalla()
 {
     printf("\033[2J\033[1;1H");
@@ -187,6 +202,8 @@ void mostrar_menu(){
     printf(ANSI_YELLOW "opción: " ANSI_RESET);
 }
 
+/// @brief toma que tipo de seguridad va a tener la contraseña
+/// @return retorna la opción seleccionada
 int menu_caracteres()
 {
     // pido por teclado el nivel de seguridad de cada contraseña 
@@ -363,21 +380,26 @@ void MostrarMatriz(char matriz[FILAS][COLUM], int utilf, int utilc)
     pausa();
 }
 
+
+/// @brief muestra el contenido del archivo con las claves y nombres.
 void mostrar_lista_contra(){
     FILE *archivo = fopen("claves.dat","r+b");
     clave contra = (clave)malloc(sizeof(struct claveRep));
 
     printf(ANSI_bCYAN "\nCONTENIDO ALMACENADO EN claves.dat\n");
     fseek(archivo, 0, SEEK_SET);
+    fread(contra, sizeof(struct claveRep), 1, archivo);
     while(!feof(archivo)){
-        fread(contra, sizeof(struct claveRep), 1, archivo);
         printf(ANSI_bMAGENTA "\n%s: " ANSI_YELLOW "%s\t \n",contra->nombre,contra->contrasenia);
+        fread(contra, sizeof(struct claveRep), 1, archivo);
     }
     pausa();
     fclose(archivo);
 }
 
-void test(int contador){
+/// @brief funcion principal que llama al menú principal y a las funciones para generar las claves
+/// @param contador variable que indica que versión del programa es
+void inicio(int contador){
     int x;
     menu(contador);
     int validador = scanf("%d",&x);
@@ -392,12 +414,12 @@ void test(int contador){
     if(x==1){
         menu_generar_claves();
         limpiar_pantalla();
-        test(contador);
+        inicio(contador);
     }
     else if(x==2){
         mostrar_lista_contra();
         limpiar_pantalla();
-        test(contador);
+        inicio(contador);
     }
     else{
         printf(ANSI_GREEN "\nHasta la próxima!" ANSI_RESET);
@@ -411,10 +433,8 @@ int main()
 {
     crear_archivo_binario();
     int contador=000;
-    
 
     limpiar_pantalla();
-
     
     // Guardo en la variable contador el numero que hay y cierro el archivo.
     FILE *archivo = fopen("contador.txt", "r");
@@ -423,7 +443,7 @@ int main()
         fclose(archivo);
     }
 
-    test(contador);
+    inicio(contador);
     
     contador++;
     // Una vez finalmente ejecutado el programa (sumado a la variable contador +1 previamente) vuelvo
