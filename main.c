@@ -457,14 +457,22 @@ void mostrar_lista_contra(){
     FILE *archivo = fopen("claves.dat","r+b");
     clave contra = (clave)malloc(sizeof(struct claveRep));
 
-    printf(ANSI_bCYAN "\nCONTENIDO ALMACENADO EN claves.dat\n");
-    fseek(archivo, 0, SEEK_SET);
-    fread(contra, sizeof(struct claveRep), 1, archivo);
-    while(!feof(archivo)){
-        if(contra->estado == true){
-            printf(ANSI_bYELLOW "\n%s: " ANSI_GREEN "%s\t \n",contra->nombre,contra->contrasenia);
-        }
+    // corrobora que el archivo este vacio
+    fseek(archivo,0,SEEK_END);
+    long file_long = ftell(archivo);
+
+    if(file_long == 0){
+        printf(ANSI_RED "\nNo hay ninguna clave guardada\n");
+    } else{
+        printf(ANSI_bCYAN "\nCONTENIDO ALMACENADO EN claves.dat\n");
+        fseek(archivo, 0, SEEK_SET);
         fread(contra, sizeof(struct claveRep), 1, archivo);
+        while(!feof(archivo)){
+            if(contra->estado == true){
+                printf(ANSI_bYELLOW "\n%s: " ANSI_GREEN "%s\t \n",contra->nombre,contra->contrasenia);
+            }
+            fread(contra, sizeof(struct claveRep), 1, archivo);
+        }
     }
     pausa();
     fclose(archivo);
